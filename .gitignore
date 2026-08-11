@@ -42,3 +42,6 @@ test-keys.ps1
 .DS_Store
 *.pem
 .vercel
+
+.vercel
+.env*
