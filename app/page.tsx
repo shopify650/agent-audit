@@ -97,7 +97,7 @@ export default function HomePage() {
               The AI agent that works with you, not just for you.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[color:var(--body)]">
-              Agent-Audit makes your site legible for machines, so the right actions, labels, and paths show up without guesswork.
+              AGEN makes your site legible for machines, so the right actions, labels, and paths show up without guesswork.
             </p>
 
             <div className="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row">
@@ -280,10 +280,10 @@ export default function HomePage() {
 
       <section className="mx-auto mt-20 max-w-[1200px] px-6 sm:px-8">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">Why Agent-Audit</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">Why AGEN</p>
           <h2 className="mt-4 text-4xl font-normal tracking-[-0.02em]">A real partner, not a chatbot in disguise.</h2>
           <p className="mt-4 text-lg leading-8 text-[color:var(--body)]">
-            Most AI tools answer questions. Agent-Audit takes initiative by surfacing the exact barriers that stop machines from taking useful actions.
+            Most AI tools answer questions. AGEN takes initiative by surfacing the exact barriers that stop machines from taking useful actions.
           </p>
         </div>
         <div className="mt-10 grid gap-4 lg:grid-cols-3">

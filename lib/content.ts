@@ -39,7 +39,7 @@ export interface DocRule {
   blocks: Block[];
 }
 
-const jay = { name: 'Jay Patel', role: 'Founder, Agent-Audit' };
+const jay = { name: 'Jay Patel', role: 'Founder, AGEN' };
 const lena = { name: 'Lena Ortiz', role: 'Agent UX engineer' };
 
 export const articles: Article[] = [
@@ -328,7 +328,7 @@ export const articles: Article[] = [
         items: [
           'View the page with scripts disabled \u2014 if the body is empty, that is your shell.',
           'Open the rendered snapshot in a headless browser and check the text content.',
-          'Run an Agent-Audit scan: the \u201cRead content without JavaScript\u201d capability fails with \u201cpage is empty when scripts are disabled\u201d.',
+          'Run an AGEN scan: the \u201cRead content without JavaScript\u201d capability fails with \u201cpage is empty when scripts are disabled\u201d.',
         ],
       },
       { type: 'h2', text: 'The fix, in order' },

@@ -57,7 +57,7 @@ export default function AuditDetailPage() {
     const blob = new Blob([JSON.stringify(audit.result, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `agent-audit-${audit.url.replace(/[^a-zA-Z0-9]/g, '-')}.json`;
+    a.download = `agen-${audit.url.replace(/[^a-zA-Z0-9]/g, '-')}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };

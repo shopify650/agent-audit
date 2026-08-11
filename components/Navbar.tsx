@@ -29,9 +29,9 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 border-b border-[var(--hairline)] bg-[var(--canvas)]/90 backdrop-blur-2xl">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-6 sm:px-8">
         <Link href="/" className="flex items-center gap-3 text-[17px] font-medium tracking-[-0.02em] text-[color:var(--ink)]">
-          <img src="/logo.png" alt="Agent-Audit logo" className="h-9 w-9 rounded-lg object-contain" />
+          <img src="/logo.png" alt="AGEN logo" className="h-9 w-9 rounded-lg object-contain" />
           <span>
-            Agent-Audit<span className="text-[var(--accent)]">.</span>
+            AGEN<span className="text-[var(--accent)]">.</span>
           </span>
         </Link>
 

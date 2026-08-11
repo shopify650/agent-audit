@@ -41,9 +41,9 @@ export default function SidebarLayout({ children, sidebar }: { children: React.R
               <div className="space-y-6">
                 <div className="rounded-xl border border-[var(--hairline-soft)] bg-[var(--canvas-soft)] p-4">
                   <Link href="/" className="flex items-center gap-3 text-[17px] font-medium tracking-[-0.02em] text-[color:var(--ink)]">
-                    <img src="/logo.png" alt="Agent-Audit logo" className="h-9 w-9 rounded-lg object-contain" />
+                    <img src="/logo.png" alt="AGEN logo" className="h-9 w-9 rounded-lg object-contain" />
                     <span>
-                      Agent-Audit<span className="text-[var(--accent)]">.</span>
+                      AGEN<span className="text-[var(--accent)]">.</span>
                     </span>
                   </Link>
                   <p className="mt-3 text-sm leading-6 text-[color:var(--body)]">

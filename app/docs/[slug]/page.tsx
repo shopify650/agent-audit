@@ -51,7 +51,7 @@ export default async function DocRulePage({ params }: Props) {
           headline: doc.title,
           description: doc.summary,
           dateModified: doc.updated,
-          author: { '@type': 'Organization', name: 'Agent-Audit' },
+          author: { '@type': 'Organization', name: 'AGEN' },
           mainEntityOfPage: `${SITE_URL}/docs/${doc.slug}`,
         }}
       />

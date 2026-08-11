@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Contact</h2>
-          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">privacy@agent-audit.example</span>. Also see our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/terms">Terms of Service</Link>.</p>
+          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">privacy@agen.example</span>. Also see our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/terms">Terms of Service</Link>.</p>
         </section>
       </div>
     </div>

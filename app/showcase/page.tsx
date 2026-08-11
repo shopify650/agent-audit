@@ -78,7 +78,7 @@ export default function ShowcasePage() {
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">Showcase</p>
         <h1 className="mt-4 text-5xl font-normal tracking-[-0.03em]">Agent-Vision in action.</h1>
         <p className="mt-5 text-lg leading-8 text-[color:var(--body)]">
-          Real failure patterns Agent-Audit detects, and the one-line fix that unlocks the page for machines.
+          Real failure patterns AGEN detects, and the one-line fix that unlocks the page for machines.
         </p>
       </div>
 

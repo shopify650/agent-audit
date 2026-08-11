@@ -14,7 +14,7 @@ export default function TermsPage() {
       <div className="mt-10 space-y-8 text-sm leading-6 text-[color:var(--body)]">
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Use of the service</h2>
-          <p className="mt-2">Agent-Audit scans public websites to surface agent-readability issues. You agree to only audit pages you own or are authorized to scan. We block access to private and internal network addresses.</p>
+          <p className="mt-2">AGEN scans public websites to surface agent-readability issues. You agree to only audit pages you own or are authorized to scan. We block access to private and internal network addresses.</p>
         </section>
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Fair use</h2>
@@ -26,7 +26,7 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Contact</h2>
-          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">legal@agent-audit.example</span>. See our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/privacy">Privacy Policy</Link>.</p>
+          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">legal@agen.example</span>. See our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/privacy">Privacy Policy</Link>.</p>
         </section>
       </div>
     </div>

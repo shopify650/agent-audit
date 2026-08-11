@@ -29,7 +29,7 @@ const FREE_PROVIDER_DEFAULTS: Record<string, { baseUrl: string; model: string }>
 };
 
 function configPath(): string {
-  return path.join(process.cwd(), '.agent-audit.json');
+  return path.join(process.cwd(), '.agen.json');
 }
 
 export function readAiConfig(): AiConfig {

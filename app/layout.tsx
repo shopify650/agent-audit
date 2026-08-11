@@ -4,8 +4,8 @@ import SiteChrome from '../components/SiteChrome';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Agent-Audit — the X-Ray for AI agents',
-    template: '%s · Agent-Audit',
+    default: 'AGEN — the X-Ray for AI agents',
+    template: '%s · AGEN',
   },
   description: 'Find out what autonomous AI agents actually see when they visit your site. Real DOM checks, actionable fixes, and an agent-readiness score.',
   icons: {

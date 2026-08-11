@@ -117,10 +117,10 @@ export default function SettingsApiPage() {
           </button>
         </div>
         <p className="mt-3 break-all font-mono text-xs text-[color:var(--muted)]">
-          {`curl -X POST ${typeof window !== 'undefined' ? window.location.origin : 'https://app.agent-audit.com'}/api/audit -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" -d '{"url":"https://example.com"}'`}
+          {`curl -X POST ${typeof window !== 'undefined' ? window.location.origin : 'https://app.agen.com'}/api/audit -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" -d '{"url":"https://example.com"}'`}
         </p>
         <p className="mt-2 break-all font-mono text-xs text-[color:var(--muted)]">
-          {`curl -X POST ${typeof window !== 'undefined' ? window.location.origin : 'https://app.agent-audit.com'}/api/site-scan -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" -d '{"url":"https://example.com"}'`}
+          {`curl -X POST ${typeof window !== 'undefined' ? window.location.origin : 'https://app.agen.com'}/api/site-scan -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" -d '{"url":"https://example.com"}'`}
         </p>
         <p className="mt-3 text-xs text-[color:var(--muted-soft)]">
           Single-page audits cost 1 audit; full-site scans cost the plan&apos;s scan fee and crawl the page cap. List scans with{' '}

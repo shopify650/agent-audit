@@ -29,7 +29,7 @@ export default function PostPage({ article, collection }: { article: Article; co
           datePublished: article.date,
           dateModified: article.updated || article.date,
           author: { '@type': 'Person', name: article.author.name },
-          publisher: { '@type': 'Organization', name: 'Agent-Audit' },
+          publisher: { '@type': 'Organization', name: 'AGEN' },
           mainEntityOfPage: `${SITE_URL}/${collection}/${article.slug}`,
           keywords: [article.category, 'agent readiness', 'AI agents', 'web accessibility'],
         }}
