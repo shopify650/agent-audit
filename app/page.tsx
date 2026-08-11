@@ -20,6 +20,7 @@ import {
 import { runAudit, saveAudit, type AuditResult } from '../lib/audit';
 import { useUser } from '../lib/auth';
 import TimelinePills from '../components/TimelinePills';
+import PricingCards from '../components/PricingCards';
 import { timelineStages } from '../lib/stages';
 
 const severityBadge: Record<string, string> = {
@@ -545,6 +546,22 @@ export default function HomePage() {
               <p className="mt-2 text-sm leading-6 text-[color:var(--body)]">{item.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto mt-20 max-w-[1200px] px-6 sm:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">Pricing</p>
+          <h2 className="mt-4 text-4xl font-normal tracking-[-0.03em] sm:text-5xl">Simple plans for every team.</h2>
+          <p className="mt-5 text-lg leading-8 text-[color:var(--body)]">
+            Start free. Upgrade when you&apos;re auditing enough sites to want history, exports, and teammates.
+          </p>
+        </div>
+        <PricingCards />
+        <div className="mt-8 text-center">
+          <Link href="/pricing" className="btn btn-secondary btn-sm">
+            Compare all plans →
+          </Link>
         </div>
       </section>
 
