@@ -1,0 +1,44 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# production
+/build
+
+# local env files — NEVER commit secrets
+.env
+.env.local
+.env*.local
+.env.production
+.env.development
+
+# logs
+*.log
+.next-dev.log
+dev-server.log
+dev.log
+next-start.log
+start-test*.log
+
+# AI config with keys (never commit)
+.agent-audit.json
+
+# test/debug junk
+.a-e2e*
+.ai-raw-content.txt
+test.txt
+'+r.status+'
+console.log('ERR'
+ERROR
+auth.users
+test-keys.ps1
+
+# misc
+.DS_Store
+*.pem
+.vercel

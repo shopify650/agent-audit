@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+
+  /* Parley design tokens */
+  --bg-page: #f7f7f4;
+  --ink: #251f19;
+  --ink-dark: #1a1613;
+  --accent: #f48d16;
+  --accent-alt: #d85f2f;
+  --text-muted: #8e857c;
+  --text-muted-2: #68615a;
+  --card-fill: #eeede6;
+  --card-border: #ddd8d3;
+  --surface-alt: #f2f3f8;
+  --white: #ffffff;
+
+  /* Aliases consumed by existing components */
+  --canvas: #f7f7f4;
+  --canvas-soft: #f1efec;
+  --surface-card: #eeede6;
+  --surface-white: #ffffff;
+  --surface-footer: #eeede6;
+  --surface-strong: #e4e2d8;
+  --body: #68615a;
+  --muted: #8e857c;
+  --muted-soft: #948b81;
+  --primary: #f48d16;
+  --primary-active: #d85f2f;
+  --hairline: #ddd8d3;
+  --hairline-soft: #e6e5e0;
+  --hairline-strong: #cfcdc4;
+  --on-primary: #ffffff;
+  --accent-soft: rgba(244, 141, 22, 0.12);
+
+  --success: #1f8a65;
+  --error: #cf2d56;
+  --warning: #b45309;
+  --optimization: #625df5;
+
+  /* AI-action timeline (in-product visualization only) */
+  --timeline-thinking: #dfa88f;
+  --timeline-read: #9fbbe0;
+  --timeline-grep: #9fc9a2;
+  --timeline-edit: #c0a8dd;
+  --timeline-done: #c08532;
+
+  --font-display: 'Geist', 'Inter', 'Inter Placeholder', sans-serif;
+  --font-sans: 'Geist', 'Inter', 'Inter Placeholder', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: 'Geist', 'Inter', 'Inter Placeholder', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: rgba(244, 141, 22, 0.2);
+    color: var(--ink);
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
+
+  kbd {
+    font-family: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(244, 141, 22, 0.35);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--ink);
+    color: var(--on-primary);
+    padding: 10px 18px;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--ink-dark);
+  }
+
+  .btn-primary:has(.btn-chip) {
+    padding: 8px 18px 8px 8px;
+  }
+
+  .btn-primary:disabled,
+  .btn-accent:disabled,
+  .btn-secondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-accent {
+    background-color: var(--accent);
+    color: var(--on-primary);
+    padding: 10px 18px;
+  }
+
+  .btn-accent:hover {
+    background-color: var(--accent-alt);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: var(--ink);
+    padding: 10px 18px;
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--hairline-strong);
+    background-color: rgba(37, 31, 25, 0.04);
+  }
+
+  .btn-sm {
+    padding: 5px 14px 5px 5px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .btn-sm.btn-primary,
+  .btn-sm.btn-accent,
+  .btn-sm.btn-secondary {
+    padding: 6px 14px;
+  }
+
+  .btn-sm.btn-primary:has(.btn-chip) {
+    padding: 4px 14px 4px 4px;
+  }
+
+  .btn-lg {
+    padding: 12px 20px 12px 12px;
+    font-size: 15px;
+  }
+
+  .btn-lg:has(.btn-chip) {
+    padding: 9px 20px 9px 9px;
+  }
+
+  .btn-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border-radius: 4px;
+    background-color: var(--accent);
+    color: var(--on-primary);
+  }
+
+  .btn-sm .btn-chip {
+    width: 22px;
+    height: 22px;
+  }
+
+  .btn-lg .btn-chip {
+    width: 36px;
+    height: 36px;
+  }
+
+  .card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+}
