@@ -37,6 +37,9 @@ console.log('ERR'
 ERROR
 auth.users
 test-keys.ps1
+prod-e2e.ps1
+set-vercel-env.ps1
+*-e2e.ps1
 
 # misc
 .DS_Store
