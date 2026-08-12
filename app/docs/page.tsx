@@ -1,6 +1,14 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { allDocs, type Severity } from '../../lib/content';
+import { SITE_URL } from '../../lib/site';
+
+export const metadata: Metadata = {
+  title: 'Docs — agent-readiness rules',
+  description: 'Every check our audit runs: why it matters, how to fix it, and what to ship instead.',
+  alternates: { canonical: `${SITE_URL}/docs` },
+};
 
 const severityBadge: Record<Severity, string> = {
   critical: 'bg-[var(--error)]/10 text-[var(--error)]',

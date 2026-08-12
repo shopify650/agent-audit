@@ -1,7 +1,16 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import ArticleCard from '../../components/ArticleCard';
 import { allArticles } from '../../lib/content';
+import { SITE_URL } from '../../lib/site';
+
+export const metadata: Metadata = {
+  title: 'Blog — notes on the machine-readable web',
+  description:
+    'How AI agents read websites, what breaks them, and the markup patterns that survive contact with automation.',
+  alternates: { canonical: `${SITE_URL}/blog` },
+};
 
 export default function BlogIndex() {
   const articles = allArticles.filter((a) => a.kind === 'article');

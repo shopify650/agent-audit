@@ -1,7 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import ArticleCard from '../../components/ArticleCard';
 import { allGuides } from '../../lib/content';
+import { SITE_URL } from '../../lib/site';
+
+export const metadata: Metadata = {
+  title: 'Guides — make your site agent-ready',
+  description: 'Step-by-step guides for building websites that autonomous agents can read, navigate, and complete tasks on.',
+  alternates: { canonical: `${SITE_URL}/guides` },
+};
 
 export default function GuidesIndex() {
   const guides = allGuides;
