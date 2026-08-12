@@ -41,13 +41,26 @@ function appendQuery(baseUrl: string, key: string, value: string): string {
   return `${baseUrl}${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
 }
 
-export function checkoutUrlForPlan(plan: PlanKey, userId?: string | null): string | null {
-  const baseUrl =
+export type BillingInterval = 'monthly' | 'annual';
+
+export function checkoutUrlForPlan(
+  plan: PlanKey,
+  userId?: string | null,
+  interval: BillingInterval = 'monthly',
+): string | null {
+  const monthly =
     plan === 'pro'
       ? process.env.NEXT_PUBLIC_CREEM_PRO_URL
       : plan === 'agency'
         ? process.env.NEXT_PUBLIC_CREEM_AGENCY_URL
         : undefined;
+  const annual =
+    plan === 'pro'
+      ? process.env.NEXT_PUBLIC_CREEM_PRO_ANNUAL_URL
+      : plan === 'agency'
+        ? process.env.NEXT_PUBLIC_CREEM_AGENCY_ANNUAL_URL
+        : undefined;
+  const baseUrl = interval === 'annual' ? annual ?? monthly : monthly;
   if (!baseUrl) return null;
   if (!userId) return baseUrl;
   return appendQuery(baseUrl, 'custom_field_user_id', userId);

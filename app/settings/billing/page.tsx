@@ -62,7 +62,7 @@ export default function SettingsBillingPage() {
   const hrefFor = (key: Plan): string | null => {
     if (key === 'pro' || key === 'agency') {
       if (!status?.userId) return null;
-      return checkoutUrlForPlan(key, status.userId);
+      return checkoutUrlForPlan(key, status.userId, 'annual');
     }
     return null;
   };

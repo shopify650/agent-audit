@@ -78,7 +78,7 @@ export default function PricingCards() {
   const hrefFor = (plan: Plan): string => {
     if (!plan.checkout) return plan.href;
     if (!userId) return '/auth/signup?next=/pricing';
-    return checkoutUrlForPlan(plan.checkout, userId) ?? plan.href;
+    return checkoutUrlForPlan(plan.checkout, userId, annual ? 'annual' : 'monthly') ?? plan.href;
   };
 
   return (
