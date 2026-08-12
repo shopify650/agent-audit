@@ -48,7 +48,8 @@ export async function GET(request: Request) {
     monthlyAuditQuota: profile?.monthly_audit_quota ?? 3,
     auditsUsed,
     subscriptionPeriodEnd: profile?.subscription_period_end ?? null,
-    creemSubscriptionId: profile?.creem_subscription_id ?? null,
+    whopMemberId: profile?.whop_member_id ?? null,
+    manageUrl: profile?.whop_manage_url ?? null,
     hasPaidPlan: plan === 'pro' || plan === 'agency',
   });
 }

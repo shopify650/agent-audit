@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import type { Plan } from '../../../lib/auth';
-import { checkoutUrlForPlan, customerPortalUrl } from '../../../lib/creem';
+import { checkoutHref } from '../../../lib/whop';
 
 type BillingStatus = {
   userId: string;
@@ -14,7 +14,8 @@ type BillingStatus = {
   monthlyAuditQuota: number;
   auditsUsed: number;
   subscriptionPeriodEnd: string | null;
-  creemSubscriptionId: string | null;
+  whopMemberId: string | null;
+  manageUrl: string | null;
   hasPaidPlan: boolean;
 };
 
@@ -57,12 +58,13 @@ export default function SettingsBillingPage() {
     status && Number.isFinite(status.monthlyAuditQuota) && status.monthlyAuditQuota > 0
       ? Math.min(100, Math.round((status.auditsUsed / status.monthlyAuditQuota) * 100))
       : 0;
-  const portalUrl = customerPortalUrl();
+  const portalUrl = status?.manageUrl ?? null;
 
   const hrefFor = (key: Plan): string | null => {
     if (key === 'pro' || key === 'agency') {
-      if (!status?.userId) return null;
-      return checkoutUrlForPlan(key, status.userId, 'annual');
+      const target = checkoutHref(key, 'annual');
+      if (!status?.userId) return `/auth/login?next=${encodeURIComponent(target)}`;
+      return target;
     }
     return null;
   };
@@ -75,7 +77,7 @@ export default function SettingsBillingPage() {
     <div>
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--primary)]">Billing</p>
       <h1 className="mt-2 text-3xl font-normal tracking-[-0.02em]">Subscription</h1>
-      <p className="mt-2 text-sm text-[color:var(--muted)]">Subscriptions are processed securely by Creem. Your plan activates automatically after payment.</p>
+      <p className="mt-2 text-sm text-[color:var(--muted)]">Subscriptions are processed securely by Whop. Your plan activates automatically after payment.</p>
 
       <div className="card mt-8 p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -163,8 +165,8 @@ export default function SettingsBillingPage() {
       <div className="card mt-8 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--muted)]">Invoices</p>
         <p className="mt-3 text-sm text-[color:var(--body)]">
-          {status?.hasPaidPlan
-            ? 'Invoices are managed by Creem. Open the customer portal to view receipts and billing history.'
+           {status?.hasPaidPlan
+            ? 'Invoices are managed by Whop. Open the customer portal to view receipts and billing history.'
             : 'No invoices yet. They’ll appear here once you upgrade to a paid plan.'}
         </p>
         <Link href="/pricing" className="mt-4 inline-block text-sm font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]">

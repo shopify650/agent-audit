@@ -108,7 +108,7 @@ export default function PricingPage() {
             },
             {
               q: 'Is there a free trial for Pro or Agency?',
-              a: 'Pro and Agency are billed through Creem. Your plan activates instantly once the subscription is confirmed, and you can cancel anytime from the customer portal.',
+              a: 'Pro and Agency are billed through Whop. Your plan activates instantly once the subscription is confirmed, and you can cancel anytime from the customer portal.',
             },
             {
               q: 'Can I integrate audits into CI?',

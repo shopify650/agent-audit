@@ -1,12 +1,13 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { PlanKey } from './plans';
+import { planKeyOf, type PlanKey } from './plans';
 import { monthKey } from './usage';
-import { creemPlanToKey, type CreemSubscriptionStatus } from './creem';
 
 export type BillingProfile = {
   id: string;
-  creem_subscription_id: string | null;
-  creem_customer_id: string | null;
+  whop_member_id: string | null;
+  whop_access_id: string | null;
+  whop_plan_id: string | null;
+  whop_manage_url: string | null;
   plan_type: string;
   subscription_status: string;
   monthly_audit_quota: number;
@@ -17,7 +18,7 @@ export type BillingProfile = {
 };
 
 export function planKeyFromProfile(profile: BillingProfile | null | undefined): PlanKey {
-  return creemPlanToKey(profile?.plan_type);
+  return planKeyOf(profile?.plan_type);
 }
 
 export function effectiveAuditsUsed(profile: BillingProfile | null | undefined): number {
@@ -56,4 +57,4 @@ export function subscriptionStatusLabel(status: string | null): string {
   return map[status ?? ''] ?? 'Active';
 }
 
-export type { CreemSubscriptionStatus };
+export type { PlanKey };

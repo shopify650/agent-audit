@@ -6,7 +6,7 @@ import { resolveCaller, bumpUsage } from '../../../lib/quota';
 import { bumpUserUsage } from '../../../lib/usage';
 import { createAuditResult, fetchProtected, normalizeUrl } from '../../../lib/auditEngine';
 import { getBillingProfile, effectiveAuditsUsed, incrementAuditsUsed } from '../../../lib/billing';
-import { planQuotaFor } from '../../../lib/creem';
+import { planQuotaFor } from '../../../lib/whop';
 import { planKeyOf } from '../../../lib/plans';
 import type { AuditResult, XRayData } from '../../../lib/audit';
 

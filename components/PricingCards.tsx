@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-import { checkoutUrlForPlan } from '../lib/creem';
-import { supabase } from '../lib/supabase';
+import { useUser } from '../lib/auth';
+import { checkoutHref } from '../lib/whop';
 
 export type Plan = {
   name: string;
@@ -63,11 +63,7 @@ export const plans: Plan[] = [
 
 export default function PricingCards() {
   const [annual, setAnnual] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then((res) => setUserId(res.data.user?.id ?? null));
-  }, []);
+  const user = useUser();
 
   const price = (plan: Plan) => {
     if (plan.monthly === null) return 'Custom';
@@ -77,8 +73,9 @@ export default function PricingCards() {
 
   const hrefFor = (plan: Plan): string => {
     if (!plan.checkout) return plan.href;
-    if (!userId) return '/auth/signup?next=/pricing';
-    return checkoutUrlForPlan(plan.checkout, userId, annual ? 'annual' : 'monthly') ?? plan.href;
+    const target = checkoutHref(plan.checkout, annual ? 'annual' : 'monthly');
+    if (!user) return `/auth/signup?next=${encodeURIComponent(target)}`;
+    return target;
   };
 
   return (
