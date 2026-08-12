@@ -127,8 +127,8 @@ export async function POST(request: Request) {
 
         if (resolved) {
           await bumpUsage(resolved.tracker).catch(() => undefined);
-          await bumpUserUsage(resolved.client, resolved.caller.userId, plan).catch(() => undefined);
-          await incrementAuditsUsed(resolved.client, resolved.caller.userId).catch(() => undefined);
+          await bumpUserUsage(resolved.caller.userId, plan).catch(() => undefined);
+          await incrementAuditsUsed(resolved.caller.userId).catch(() => undefined);
         }
 
         send('done', { result });

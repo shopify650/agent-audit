@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { PlanKey } from './plans';
 import { monthKey } from './usage';
 import { creemPlanToKey, type CreemSubscriptionStatus } from './creem';
@@ -36,7 +36,11 @@ export async function getBillingProfile(client: SupabaseClient, userId: string):
   return data as BillingProfile;
 }
 
-export async function incrementAuditsUsed(client: SupabaseClient, userId: string): Promise<void> {
+export async function incrementAuditsUsed(userId: string): Promise<void> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return;
+  const client = createClient(url, serviceKey, { auth: { persistSession: false } });
   await client.rpc('increment_audits_used', { p_user_id: userId });
 }
 

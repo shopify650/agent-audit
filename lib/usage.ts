@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export type UsageRecord = { month: string; count: number };
 
@@ -29,6 +29,10 @@ export async function countMonthlyAudits(client: SupabaseClient, userId: string)
   return error ? 0 : (count ?? 0);
 }
 
-export async function bumpUserUsage(client: SupabaseClient, userId: string, planId: string): Promise<void> {
+export async function bumpUserUsage(userId: string, planId: string): Promise<void> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return;
+  const client = createClient(url, serviceKey, { auth: { persistSession: false } });
   await client.rpc('bump_user_usage', { p_user_id: userId, p_plan_id: planId });
 }
