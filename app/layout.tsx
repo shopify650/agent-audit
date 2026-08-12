@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'AGEN — the X-Ray for AI agents',
     template: '%s · AGEN',
   },
-  description: 'Find out what autonomous AI agents actually see when they visit your site. Real DOM checks, actionable fixes, and an agent-readiness score.',
+  description: 'Run a free website audit to see if AI agents can read your DOM. Get copy-pasteable HTML and ARIA fixes to optimize your checkout and landing pages for AI browsers.',
   icons: {
     icon: '/logo.png',
   },
