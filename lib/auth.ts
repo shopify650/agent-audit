@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
+import { getDeviceId } from './device';
 import { planKeyOf, type PlanKey } from './plans';
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -32,20 +33,27 @@ export async function signup(input: {
   password: string;
   company?: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  const { data, error } = await supabase.auth.signUp({
+  const deviceId = getDeviceId();
+
+  const res = await fetch('/api/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: input.name,
+      email: input.email,
+      password: input.password,
+      company: input.company,
+      deviceId,
+    }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) return { ok: false, error: data.error || 'Sign up failed' };
+
+  const { error } = await supabase.auth.signInWithPassword({
     email: input.email.trim().toLowerCase(),
     password: input.password,
-    options: {
-      data: {
-        name: input.name.trim(),
-        company: input.company?.trim() || undefined,
-        plan: 'free',
-      },
-    },
   });
-
   if (error) return { ok: false, error: error.message };
-  if (!data.user) return { ok: false, error: 'Signup failed. Check your email for confirmation.' };
 
   return { ok: true };
 }
@@ -60,6 +68,22 @@ export async function login(input: {
   });
 
   if (error) return { ok: false, error: error.message };
+
+  const deviceId = getDeviceId();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (deviceId && session?.access_token) {
+    fetch('/api/device/bind', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ deviceId }),
+    }).catch(() => {});
+  }
+
   return { ok: true };
 }
 

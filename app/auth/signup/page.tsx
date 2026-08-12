@@ -87,6 +87,9 @@ function SignupForm() {
         </form>
 
         <p className="mt-6 text-center text-sm text-[color:var(--muted)]">
+          One account per device. If this device already has an account, sign in instead.
+        </p>
+        <p className="mt-2 text-center text-sm text-[color:var(--muted)]">
           Already have an account?{' '}
           <Link href="/auth/login" className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]">
             Sign in
