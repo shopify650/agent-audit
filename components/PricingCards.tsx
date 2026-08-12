@@ -15,6 +15,8 @@ export type Plan = {
   checkout?: 'pro' | 'agency';
   featured?: boolean;
   badge?: string;
+  soon?: boolean;
+  soonFeatures?: string[];
   features: string[];
 };
 
@@ -45,14 +47,16 @@ export const plans: Plan[] = [
     cta: 'Subscribe',
     href: '/auth/signup',
     checkout: 'agency',
+    soonFeatures: ['Team seats'],
     features: ['100 audits / month', 'Full site scan (25 pages)', 'Report history & exports', 'API access & CI integration', 'Team seats', 'Priority support'],
   },
   {
     name: 'Enterprise',
     monthly: null,
     blurb: 'For platforms embedding agent-readiness into CI.',
-    cta: 'Let’s talk about it',
-    href: '/auth/signup',
+    cta: 'Coming soon',
+    href: '#',
+    soon: true,
     features: ['Unlimited audits', 'Full site scan (100 pages)', 'API access & CI integration', 'SLA & compliance', 'Dedicated success'],
   },
 ];
@@ -123,10 +127,19 @@ export default function PricingCards() {
                 <li key={f} className="flex items-start gap-2.5">
                   <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.featured ? 'text-[var(--accent)]' : 'text-[var(--accent)]'}`} strokeWidth={2} aria-hidden="true" />
                   <span>{f}</span>
+                  {plan.soonFeatures?.includes(f) && (
+                    <span className="ml-auto shrink-0 rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+                      Soon
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
-            {plan.featured ? (
+            {plan.soon ? (
+              <button disabled className="btn btn-secondary btn-sm mt-8 w-full cursor-not-allowed opacity-60">
+                {plan.cta}
+              </button>
+            ) : plan.featured ? (
               <Link href={hrefFor(plan)} className="btn btn-accent btn-sm mt-8 w-full">
                 <span className="btn-chip">
                   <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />

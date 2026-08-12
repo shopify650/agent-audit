@@ -117,9 +117,12 @@ export default function SettingsBillingPage() {
                   Current plan
                 </button>
               ) : p.key === 'enterprise' ? (
-                <Link href="/auth/signup?next=/pricing" className="btn btn-secondary btn-sm mt-5 w-full">
-                  Let’s talk
-                </Link>
+                <button
+                  disabled
+                  className="mt-5 w-full cursor-not-allowed rounded-lg border border-[var(--hairline-strong)] px-4 py-2 text-sm font-medium text-[color:var(--muted)] opacity-60"
+                >
+                  Coming soon
+                </button>
               ) : href ? (
                 <Link href={href} className="btn btn-primary btn-sm mt-5 w-full">
                   Upgrade
