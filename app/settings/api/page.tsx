@@ -100,6 +100,8 @@ export default function SettingsApiPage() {
       <h1 className="mt-2 text-3xl font-normal tracking-[-0.02em]">Agency API keys</h1>
       <p className="mt-2 text-sm text-[color:var(--muted)]">Wire audit results into CI, docs, or your own tools.</p>
 
+      {hasApiAccess ? (
+        <>
       <div className="card mt-8 p-6">
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
@@ -138,21 +140,6 @@ export default function SettingsApiPage() {
         </p>
       </div>
 
-      {!hasApiAccess ? (
-        <div className="card mt-6 flex flex-col items-center p-10 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--surface-strong)] text-[var(--muted)]">
-            <Lock className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
-          </div>
-          <p className="mt-4 text-base font-medium text-[color:var(--ink)]">API access is an Agency feature</p>
-          <p className="mt-1 max-w-sm text-sm text-[color:var(--muted)]">
-            Wire audit results into CI, docs, and your own tools with programmatic API keys. Upgrade to Agency or Enterprise to unlock it.
-          </p>
-          <Link href="/pricing" className="btn btn-primary btn-sm mt-5">
-            Compare plans & upgrade →
-          </Link>
-        </div>
-      ) : (
-        <>
       {freshKey && (
         <div className="card mt-6 border-[var(--primary)] p-6">
           <div className="flex items-start justify-between gap-4">
@@ -197,6 +184,19 @@ export default function SettingsApiPage() {
         )}
       </div>
         </>
+      ) : (
+        <div className="card mt-6 flex flex-col items-center p-10 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--surface-strong)] text-[var(--muted)]">
+            <Lock className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
+          </div>
+          <p className="mt-4 text-base font-medium text-[color:var(--ink)]">API access is an Agency feature</p>
+          <p className="mt-1 max-w-sm text-sm text-[color:var(--muted)]">
+            Wire audit results into CI, docs, and your own tools with programmatic API keys. Upgrade to Agency or Enterprise to unlock it.
+          </p>
+          <Link href="/pricing" className="btn btn-primary btn-sm mt-5">
+            Compare plans & upgrade →
+          </Link>
+        </div>
       )}
     </div>
   );
