@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import SiteChrome from '../components/SiteChrome';
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="min-h-[60vh]">{children}</main>
           </SiteChrome>
         </div>
+        <Analytics />
       </body>
     </html>
   );

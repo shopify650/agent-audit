@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createHash } from 'crypto';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -32,6 +33,23 @@ function serviceClient() {
   return createClient(url, serviceKey, { auth: { persistSession: false } });
 }
 
+async function isPwnedPassword(password: string): Promise<boolean> {
+  try {
+    const sha1 = createHash('sha1').update(password).digest('hex').toUpperCase();
+    const prefix = sha1.slice(0, 5);
+    const suffix = sha1.slice(5);
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { 'Add-Padding': 'true' },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) return false;
+    const body = await res.text();
+    return body.split('\r\n').some((line) => line.split(':')[0] === suffix);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const name = typeof body.name === 'string' ? body.name.trim() : '';
@@ -48,6 +66,12 @@ export async function POST(request: Request) {
   }
   if (deviceId.length < 8 || deviceId.length > 128) {
     return NextResponse.json({ error: 'Device identification failed. Please try again.' }, { status: 400 });
+  }
+  if (await isPwnedPassword(password)) {
+    return NextResponse.json(
+      { error: 'This password has appeared in a known data breach. Please choose a stronger one.' },
+      { status: 400 },
+    );
   }
 
   const client = serviceClient();

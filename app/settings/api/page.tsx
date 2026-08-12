@@ -5,21 +5,11 @@ import Link from 'next/link';
 import { Lock, X } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useUser } from '../../../lib/auth';
-import { hashApiKey, apiKeyHint } from '../../../lib/apiKey';
-import type { User } from '@supabase/supabase-js';
+import { apiKeyHint } from '../../../lib/apiKey';
 
 type ApiKey = { id: string; name: string; keyHint: string; createdAt: number };
 
-function newKey(): string {
-  const bytes = new Uint8Array(24);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
 export default function SettingsApiPage() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [name, setName] = useState('');
   const [copied, setCopied] = useState(false);
@@ -32,7 +22,6 @@ export default function SettingsApiPage() {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      setUserId(user.id);
       const { data, error } = await supabase
         .from('api_keys')
         .select('*')
@@ -51,32 +40,31 @@ export default function SettingsApiPage() {
   }, []);
 
   const create = async () => {
-    if (!name.trim() || !userId) return;
+    if (!name.trim()) return;
     setLoading(true);
-    const key: string = `aa_${newKey()}`;
-    const hash = await hashApiKey(key);
-    const hint = apiKeyHint(key);
-    const { data, error } = await supabase
-      .from('api_keys')
-      .insert({ user_id: userId, name: name.trim(), key: hash, key_hint: hint })
-      .select()
-      .single();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const res = await fetch('/api/keys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token ?? ''}`,
+      },
+      body: JSON.stringify({ name: name.trim() }),
+    });
+    const data = await res.json().catch(() => ({}));
     setLoading(false);
-    if (error) {
-      alert(error.message);
+    if (!res.ok || !data.id) {
+      alert(data.error || 'Failed to create key');
       return;
     }
-    if (data) {
-      const newKey: ApiKey = {
-        id: data.id,
-        name: data.name,
-        keyHint: data.key_hint ?? hint,
-        createdAt: new Date(data.created_at).getTime(),
-      };
-      setKeys([newKey, ...keys]);
-    }
+    setKeys((prev) => [
+      { id: data.id, name: data.name, keyHint: data.keyHint, createdAt: data.createdAt },
+      ...prev,
+    ]);
     setName('');
-    setFreshKey(key);
+    setFreshKey(data.key);
     setCopied(false);
   };
 
