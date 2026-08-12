@@ -31,12 +31,8 @@ function SignupForm() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
       <div className="card p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--primary)]">Start free</p>
-        <h1 className="mt-3 text-3xl font-normal tracking-[-0.02em]">Create your account</h1>
-        <p className="mt-2 text-sm text-[color:var(--muted)]">Save reports, track readiness over time, and export fixes.</p>
-
         <form
-          className="mt-8 space-y-4"
+          className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
@@ -87,9 +83,6 @@ function SignupForm() {
         </form>
 
         <p className="mt-6 text-center text-sm text-[color:var(--muted)]">
-          One account per device. If this device already has an account, sign in instead.
-        </p>
-        <p className="mt-2 text-center text-sm text-[color:var(--muted)]">
           Already have an account?{' '}
           <Link href="/auth/login" className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]">
             Sign in

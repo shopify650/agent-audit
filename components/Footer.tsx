@@ -69,7 +69,7 @@ export default function Footer() {
       </div>
       <div className="mx-auto mt-14 flex max-w-[1200px] flex-col gap-2 px-6 text-xs text-[color:var(--muted-soft)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p>© {new Date().getFullYear()} AGEN. Built for the agent economy.</p>
-        <p className="font-mono">100 – the number of ways a robot can misread your homepage.</p>
+        <p className="font-mono">100 – the number of ways agents can misread your homepage.</p>
       </div>
 
       <div className="relative mx-auto mt-20 max-w-[1200px] overflow-hidden px-4 sm:px-8">
