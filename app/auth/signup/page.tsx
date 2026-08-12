@@ -31,8 +31,12 @@ function SignupForm() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
       <div className="card p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--primary)]">Sign up</p>
+        <h1 className="mt-3 text-3xl font-normal tracking-[-0.02em]">Create your account</h1>
+        <p className="mt-2 text-sm text-[color:var(--muted)]">Pick up where your last audit left off.</p>
+
         <form
-          className="space-y-4"
+          className="mt-8 space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
