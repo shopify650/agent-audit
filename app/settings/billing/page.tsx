@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import type { Plan } from '../../../lib/auth';
+import { PLANS, priceLabel } from '../../../lib/pricing';
 import { checkoutHref } from '../../../lib/whop';
 
 type BillingStatus = {
@@ -19,12 +20,12 @@ type BillingStatus = {
   hasPaidPlan: boolean;
 };
 
-const plans: { key: Plan; label: string; price: string; blurb: string }[] = [
-  { key: 'free', label: 'Free', price: '$0', blurb: '3 audits / month' },
-  { key: 'pro', label: 'Pro', price: '$14/mo', blurb: '30 audits / month' },
-  { key: 'agency', label: 'Agency', price: '$44/mo', blurb: '100 audits / month · API access' },
-  { key: 'enterprise', label: 'Enterprise', price: 'Custom', blurb: 'Unlimited audits, API, SLA' },
-];
+const plans: { key: Plan; label: string; price: string; blurb: string }[] = PLANS.map((p) => ({
+  key: p.id,
+  label: p.name,
+  price: p.priceAnnual ? `${priceLabel(p, 'annual')}/mo` : priceLabel(p, 'annual'),
+  blurb: p.features[0] ?? '',
+}));
 
 function formatDate(value: string | null): string {
   if (!value) return '—';

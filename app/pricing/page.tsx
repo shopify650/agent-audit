@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Check, ChevronDown, Minus } from 'lucide-react';
 import PricingCards from '../../components/PricingCards';
+import { type PlanKey } from '../../lib/plans';
+import { quotaLabel, scanPagesLabel, PLANS } from '../../lib/pricing';
 
 const includes = [
   'Full DOM and ARIA audit report',
@@ -12,6 +14,38 @@ const includes = [
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  type RowValue = boolean | string;
+  interface ComparisonRow {
+    feature: string;
+    free: RowValue;
+    pro: RowValue;
+    agency: RowValue;
+    enterprise: RowValue;
+  }
+  const row = (feature: string, map: Record<PlanKey, RowValue>): ComparisonRow =>
+    ({ feature, ...map } as ComparisonRow);
+  const rows: ComparisonRow[] = [
+    row('Audits per month', {
+      free: quotaLabel('free'),
+      pro: quotaLabel('pro'),
+      agency: quotaLabel('agency'),
+      enterprise: quotaLabel('enterprise'),
+    }),
+    row('Full site scan', {
+      free: scanPagesLabel('free'),
+      pro: scanPagesLabel('pro'),
+      agency: scanPagesLabel('agency'),
+      enterprise: scanPagesLabel('enterprise'),
+    }),
+    row('Full DOM & ARIA report', { free: true, pro: true, agency: true, enterprise: true }),
+    row('Copy-paste fixes', { free: true, pro: true, agency: true, enterprise: true }),
+    row('Report history & exports', { free: false, pro: true, agency: true, enterprise: true }),
+    row('Team seats', { free: '1', pro: 'Up to 3', agency: 'Up to 10', enterprise: 'Unlimited' }),
+    row('API access & CI integration', { free: false, pro: false, agency: true, enterprise: true }),
+    row('SLA & compliance', { free: false, pro: false, agency: false, enterprise: true }),
+    row('Dedicated success', { free: false, pro: false, agency: false, enterprise: true }),
+  ];
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-16 sm:px-8 sm:py-24">
@@ -55,16 +89,7 @@ export default function PricingPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { feature: 'Audits per month', free: '3', pro: '30', agency: '100', enterprise: 'Unlimited' },
-                { feature: 'Full DOM & ARIA report', free: true, pro: true, agency: true, enterprise: true },
-                { feature: 'Copy-paste fixes', free: true, pro: true, agency: true, enterprise: true },
-                { feature: 'Report history & exports', free: false, pro: true, agency: true, enterprise: true },
-                { feature: 'Team seats', free: '1', pro: 'Up to 3', agency: 'Up to 10', enterprise: 'Unlimited' },
-                { feature: 'API access & CI integration', free: false, pro: false, agency: true, enterprise: true },
-                { feature: 'SLA & compliance', free: false, pro: false, agency: false, enterprise: true },
-                { feature: 'Dedicated success', free: false, pro: false, agency: false, enterprise: true },
-              ].map((row: any, i) => (
+              {rows.map((row, i) => (
                 <tr key={row.feature} className={i % 2 ? 'bg-[var(--surface-white)]' : ''}>
                   <td className="px-6 py-4 font-medium text-[color:var(--ink)]">{row.feature}</td>
                   <td className="px-6 py-4 text-center text-[color:var(--body)]">
