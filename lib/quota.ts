@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { hashApiKey } from './apiKey';
 import { planKeyOf, planLimit } from './plans';
 import { monthKey, readUsage, countMonthlyAudits } from './usage';
 
@@ -118,10 +119,11 @@ export async function resolveCaller(request: Request): Promise<ResolvedCaller | 
   if (!serviceKey) return null;
 
   const serviceClient = createClient(url, serviceKey, { auth: { persistSession: false } });
+  const keyHash = await hashApiKey(token);
   const { data: keyRow, error: keyError } = await serviceClient
     .from('api_keys')
     .select('user_id')
-    .eq('key', token)
+    .eq('key', keyHash)
     .maybeSingle();
   if (keyError || !keyRow) return null;
 

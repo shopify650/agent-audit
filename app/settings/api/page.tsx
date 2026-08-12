@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
+import { Lock, X } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useUser } from '../../../lib/auth';
+import { hashApiKey, apiKeyHint } from '../../../lib/apiKey';
 import type { User } from '@supabase/supabase-js';
 
-type ApiKey = { id: string; name: string; key: string; createdAt: number };
+type ApiKey = { id: string; name: string; keyHint: string; createdAt: number };
 
 function newKey(): string {
   const bytes = new Uint8Array(24);
@@ -21,7 +22,8 @@ export default function SettingsApiPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [name, setName] = useState('');
-  const [copied, setCopied] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [freshKey, setFreshKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const user = useUser();
   const hasApiAccess = user?.plan === 'agency' || user?.plan === 'enterprise';
@@ -40,7 +42,7 @@ export default function SettingsApiPage() {
         setKeys(data.map((row: any) => ({
           id: row.id,
           name: row.name,
-          key: row.key,
+          keyHint: row.key_hint ?? apiKeyHint(row.key ?? ''),
           createdAt: new Date(row.created_at).getTime(),
         })));
       }
@@ -52,9 +54,11 @@ export default function SettingsApiPage() {
     if (!name.trim() || !userId) return;
     setLoading(true);
     const key: string = `aa_${newKey()}`;
+    const hash = await hashApiKey(key);
+    const hint = apiKeyHint(key);
     const { data, error } = await supabase
       .from('api_keys')
-      .insert({ user_id: userId, name: name.trim(), key })
+      .insert({ user_id: userId, name: name.trim(), key: hash, key_hint: hint })
       .select()
       .single();
     setLoading(false);
@@ -66,14 +70,14 @@ export default function SettingsApiPage() {
       const newKey: ApiKey = {
         id: data.id,
         name: data.name,
-        key: data.key,
+        keyHint: data.key_hint ?? hint,
         createdAt: new Date(data.created_at).getTime(),
       };
       setKeys([newKey, ...keys]);
     }
     setName('');
-    setCopied(key);
-    setTimeout(() => setCopied(null), 3000);
+    setFreshKey(key);
+    setCopied(false);
   };
 
   const revoke = async (id: string) => {
@@ -87,8 +91,7 @@ export default function SettingsApiPage() {
 
   const copy = (key: string) => {
     navigator.clipboard?.writeText(key).catch(() => undefined);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 2000);
+    setCopied(true);
   };
 
   return (
@@ -149,7 +152,27 @@ export default function SettingsApiPage() {
           </Link>
         </div>
       ) : (
-        <div className="mt-6 space-y-3">
+        <>
+      {freshKey && (
+        <div className="card mt-6 border-[var(--primary)] p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-[color:var(--ink)]">Copy your key now — it won&apos;t be shown again.</p>
+              <p className="mt-1 break-all font-mono text-xs text-[color:var(--muted)]">{freshKey}</p>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <button onClick={() => copy(freshKey)} className="btn btn-primary btn-sm">
+                {copied ? 'Copied ✓' : 'Copy'}
+              </button>
+              <button onClick={() => setFreshKey(null)} className="btn px-2 py-2 text-[color:var(--muted)] transition hover:text-[var(--error)]" aria-label="Dismiss">
+                <X className="h-4 w-4" strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-6 space-y-3">
         {keys.length === 0 ? (
           <div className="card p-8 text-center text-sm text-[color:var(--muted)]">
             No API keys yet. Create one above to start integrating.
@@ -160,25 +183,20 @@ export default function SettingsApiPage() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-[color:var(--ink)]">{k.name}</p>
-                  <p className="mt-1 font-mono text-xs text-[color:var(--muted)]">
-                    {k.key.slice(0, 14)}…{k.key.slice(-6)}
-                  </p>
+                  <p className="mt-1 font-mono text-xs text-[color:var(--muted)]">{k.keyHint}</p>
                   <p className="mt-1 text-xs text-[color:var(--muted-soft)]">Created {new Date(k.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <button onClick={() => copy(k.key)} className="btn btn-secondary btn-sm">
-                    {copied === k.key ? 'Copied ✓' : 'Copy'}
-                  </button>
                   <button onClick={() => revoke(k.id)} className="btn px-3 py-2 text-sm font-medium text-[color:var(--muted)] transition hover:text-[var(--error)]">
                     Revoke
                   </button>
                 </div>
               </div>
-              {copied === k.key && <p className="mt-3 rounded-md border border-[var(--hairline)] bg-[var(--canvas-soft)] p-2 font-mono text-xs break-all text-[color:var(--ink)]">{k.key}</p>}
             </div>
           ))
         )}
       </div>
+        </>
       )}
     </div>
   );
