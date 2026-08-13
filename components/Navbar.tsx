@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useUser, logout } from '../lib/auth';
+import { usePathname } from 'next/navigation';
+import { useUser } from '../lib/auth';
 
 const links = [
   { href: '/pricing', label: 'Pricing' },
@@ -15,15 +15,8 @@ const links = [
 
 export default function Navbar() {
   const user = useUser();
-  const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  const signOut = () => {
-    logout();
-    setOpen(false);
-    router.replace('/');
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--hairline)] bg-[var(--canvas)]/90 backdrop-blur-2xl">
@@ -60,9 +53,6 @@ export default function Navbar() {
                 </span>
                 New audit
               </Link>
-              <button onClick={signOut} className="btn btn-secondary btn-sm">
-                Sign out
-              </button>
             </>
           ) : (
             <>
@@ -103,9 +93,6 @@ export default function Navbar() {
                 <Link href="/dashboard" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--ink)]">
                   Dashboard
                 </Link>
-                <button onClick={signOut} className="rounded-lg px-3 py-2 text-left text-sm font-medium text-[color:var(--body)] hover:text-[color:var(--ink)]">
-                  Sign out
-                </button>
               </>
             ) : (
               <>

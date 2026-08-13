@@ -206,18 +206,6 @@ export default function SettingsBillingPage() {
           )}
         </div>
       )}
-
-      <div className="card mt-8 p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--muted)]">Invoices</p>
-        <p className="mt-3 text-sm text-[color:var(--body)]">
-           {status?.hasPaidPlan
-            ? 'Invoices are managed by Whop. Open the customer portal to view receipts and billing history.'
-            : 'No invoices yet. They’ll appear here once you upgrade to a paid plan.'}
-        </p>
-        <Link href="/pricing" className="mt-4 inline-block text-sm font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]">
-          Compare plans →
-        </Link>
-      </div>
     </div>
   );
 }
