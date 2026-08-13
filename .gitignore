@@ -28,6 +28,19 @@ start-test*.log
 # AI config with keys (never commit)
 .agent-audit.json
 
+# whop/turbopack debug artifacts
+/c1.js
+/c2.js
+/c3.js
+/c4.js
+/c_*.js
+/all-chunks.txt
+/scripts.txt
+/chk.html
+/local-checkout.html
+/prod-checkout.html
+/prod-checkout2.html
+
 # test/debug junk
 .a-e2e*
 .ai-raw-content.txt

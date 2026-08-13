@@ -129,7 +129,7 @@ export default function PricingCards() {
                     />
                     <span>{f}</span>
                     {plan.soonFeatures?.includes(f) && (
-                      <span className="ml-auto shrink-0 rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+                      <span className="ml-auto shrink-0 rounded-full bg-[var(--accent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white">
                         Soon
                       </span>
                     )}

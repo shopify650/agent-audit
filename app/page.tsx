@@ -109,12 +109,12 @@ export default function HomePage() {
                   if (e.key === 'Enter') void runAuditAction(url);
                 }}
                 placeholder="Enter your website URL"
-                className="h-12 flex-1 rounded-lg border border-[var(--card-border)] bg-[var(--surface-card)] px-4 text-sm text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted-soft)] focus:border-[var(--accent)]"
+                className="h-12 w-full rounded-lg border border-[var(--card-border)] bg-[var(--surface-card)] px-4 text-sm text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted-soft)] focus:border-[var(--accent)] sm:w-auto sm:flex-1"
               />
               <button
                 onClick={() => void runAuditAction(url)}
                 disabled={loading}
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary btn-lg w-full sm:w-auto"
               >
                 <span className="btn-chip">
                   <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
@@ -294,7 +294,7 @@ export default function HomePage() {
             { num: '03.', title: 'Connects everything', body: 'Reports can be saved, shared, and reviewed from the dashboard for your whole team.' },
           ].map((item) => (
             <div key={item.num} className="card p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)]/12 text-sm font-semibold text-[var(--accent)]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)] text-sm font-semibold text-white">
                 {item.num}
               </div>
               <p className="mt-4 text-lg font-medium text-[color:var(--ink)]">{item.title}</p>
@@ -451,7 +451,7 @@ export default function HomePage() {
             { icon: Eye, title: 'Rendered DOM', body: 'JavaScript-rendered shells are caught — we verify the page isn’t an empty <div id="app">.' },
           ].map((item) => (
             <div key={item.title} className="card p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)]/12 text-[var(--accent)]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)] text-white">
                 <item.icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
               </div>
               <p className="mt-4 text-lg font-medium text-[color:var(--ink)]">{item.title}</p>

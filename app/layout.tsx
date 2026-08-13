@@ -1,7 +1,25 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
+import { Geist, Inter, JetBrains_Mono } from 'next/font/google';
 import SiteChrome from '../components/SiteChrome';
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-inter',
+});
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -16,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geist.variable} ${inter.variable} ${mono.variable}`}>
       <body>
         <div className="min-h-screen bg-[var(--canvas)] text-[color:var(--ink)]">
           <SiteChrome>

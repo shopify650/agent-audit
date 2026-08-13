@@ -42,7 +42,7 @@ export default function BlogIndex() {
             className="card group flex flex-col justify-between p-8 lg:col-span-2"
           >
             <div className="flex items-center gap-3">
-              <span className="rounded-full bg-[var(--accent)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+              <span className="rounded-full bg-[var(--accent)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
                 Featured
               </span>
               <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[color:var(--muted)]">

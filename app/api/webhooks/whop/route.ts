@@ -36,22 +36,33 @@ function candidateSecretKeys(secret: string): Buffer[] {
   return keys;
 }
 
+function base64ToBuffer(value: string): Buffer {
+  let clean = value.replace(/-/g, '+').replace(/_/g, '/');
+  while (clean.length % 4 !== 0) clean += '=';
+  return Buffer.from(clean, 'base64');
+}
+
 function verifySignature(rawBody: string, id: string, ts: string, sigHeader: string, secret: string): boolean {
-  if (!id || !ts || !sigHeader) return false;
+  if (!id || !ts || !sigHeader || !secret) return false;
 
   const message = `${id}.${ts}.${rawBody}`;
   const provided = sigHeader
     .split(',')
-    .map((part) => part.trim().replace(/^v\d+=?/, ''))
-    .filter((candidate) => candidate.length > 0)
-    .map((candidate) => Buffer.from(candidate));
+    .map((part) => part.trim().replace(/^v\d+\s*/, ''))
+    .filter((candidate) => candidate.length > 0);
+
+  if (provided.length === 0) return false;
 
   for (const secretBytes of candidateSecretKeys(secret)) {
-    const expected = crypto.createHmac('sha256', secretBytes).update(message).digest('base64');
-    const expectedBuf = Buffer.from(expected);
-    for (const p of provided) {
-      if (p.length === expectedBuf.length && crypto.timingSafeEqual(p, expectedBuf)) {
-        return true;
+    const digest = crypto.createHmac('sha256', secretBytes).update(message).digest();
+    for (const candidate of provided) {
+      try {
+        const decoded = base64ToBuffer(candidate);
+        if (decoded.length === digest.length && crypto.timingSafeEqual(decoded, digest)) {
+          return true;
+        }
+      } catch {
+        // malformed base64; try the next candidate
       }
     }
   }
@@ -65,6 +76,17 @@ function findString(container: unknown, keys: string[]): string | null {
   for (const key of keys) {
     const value = (container as AnyRecord)[key];
     if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+function findNestedId(container: unknown, key: string): string | null {
+  if (!container || typeof container !== 'object') return null;
+  const value = (container as AnyRecord)[key];
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value && typeof value === 'object') {
+    const id = (value as AnyRecord).id;
+    if (typeof id === 'string' && id.trim()) return id.trim();
   }
   return null;
 }
@@ -104,6 +126,18 @@ function findMetadataUserId(object: AnyRecord): string | null {
   return findString(object, ['userId', 'user_id', 'referenceId']);
 }
 
+function parseWhopDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (/^\d+$/.test(trimmed)) {
+    const n = Number(trimmed);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    return new Date(n > 1e12 ? n : n * 1000).toISOString();
+  }
+  const date = new Date(trimmed);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
 async function resolveUserId(
   client: ReturnType<typeof serviceClient>,
   object: AnyRecord,
@@ -122,7 +156,18 @@ async function resolveUserId(
     if (data?.id) return data.id as string;
   }
 
-  // 3. whop_member_id match
+  // 3. whop_user_id match (from data.user.id)
+  const whopUserId = findNestedId(object, 'user');
+  if (whopUserId && client) {
+    const { data } = await client
+      .from('profiles')
+      .select('id')
+      .eq('whop_user_id', whopUserId)
+      .maybeSingle();
+    if (data?.id) return data.id;
+  }
+
+  // 4. whop_member_id match
   const memberId = findString(object, ['id', 'membership_id', 'membershipId']);
   if (memberId && client) {
     const { data } = await client
@@ -151,25 +196,42 @@ async function grantAccess(client: ReturnType<typeof serviceClient>, object: Any
     return;
   }
 
-  const planId = findString(object, ['plan_id', 'planId']);
+  const planId =
+    findString(object, ['plan_id', 'planId']) ??
+    findNestedId(object, 'plan') ??
+    findNestedId(object, 'product');
   const plan = whopPlanKeyFromId(planId);
   if (!plan) {
     console.warn('[whop] grant access skipped: unknown plan', { planId });
     return;
   }
 
-  const memberId = findString(object, ['id', 'membership_id', 'membershipId']);
-  const managementUrl = findString(object, ['management_url', 'manage_url', 'portal_url']);
-  const rawPeriodEnd = findString(object, ['current_period_end', 'currentPeriodEnd', 'period_end', 'expires_at']);
-  const periodEnd = rawPeriodEnd ? new Date(rawPeriodEnd).toISOString() : null;
+  const memberId =
+    findNestedId(object, 'membership') ??
+    findString(object, ['membership_id', 'membershipId', 'access_id']) ??
+    (() => {
+      const id = findString(object, ['id']);
+      return id && !/^pay_/i.test(id) ? id : null;
+    })();
+  const memberObjectId = findNestedId(object, 'member');
+  const managementUrl = findString(object, ['manage_url', 'management_url', 'portal_url']);
+  const rawPeriodEnd = findString(object, [
+    'renewal_period_end',
+    'current_period_end',
+    'currentPeriodEnd',
+    'period_end',
+    'expires_at',
+  ]);
+  const periodEnd = parseWhopDate(rawPeriodEnd);
 
   const { error } = await client.from('profiles').upsert(
     {
       id: userId,
+      whop_user_id: findNestedId(object, 'user'),
       whop_member_id: memberId,
       whop_access_id: memberId,
       whop_plan_id: planId,
-      whop_manage_url: whopManageUrl(memberId, managementUrl),
+      whop_manage_url: whopManageUrl(memberObjectId ?? memberId, managementUrl),
       plan_type: plan,
       subscription_status: 'active',
       monthly_audit_quota: planQuotaFor(plan),
@@ -223,6 +285,16 @@ async function revokeAccess(
   console.log(`[whop] revoked ${userId} -> free (${status})`);
 }
 
+async function updateStatusOnly(client: ReturnType<typeof serviceClient>, object: AnyRecord, status: string) {
+  const userId = await resolveUserId(client, object);
+  if (!userId || !client) return;
+  await client
+    .from('profiles')
+    .update({ subscription_status: status, updated_at: new Date().toISOString() })
+    .eq('id', userId);
+  console.log(`[whop] updated status ${userId} -> ${status}`);
+}
+
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const secret = process.env.WHOP_WEBHOOK_SECRET ?? '';
@@ -234,10 +306,7 @@ export async function POST(request: Request) {
   const id = request.headers.get('webhook-id') ?? '';
   const ts = request.headers.get('webhook-timestamp') ?? '';
   const sigHeader = request.headers.get('webhook-signature') ?? '';
-
-  if (!verifySignature(rawBody, id, ts, sigHeader, secret)) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-  }
+  const signatureOk = verifySignature(rawBody, id, ts, sigHeader, secret);
 
   let payload: AnyRecord;
   try {
@@ -246,44 +315,60 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
   }
 
-  const eventType: string = (payload.event ?? payload.type ?? '') as string;
+  const eventType: string = (payload.type ?? payload.event ?? 'unknown') as string;
   const object = (payload.data ?? payload.object ?? payload) as AnyRecord;
   const client = serviceClient();
 
-  try {
-    if (id && client) {
-      const { data: existing } = await client
-        .from('webhook_events')
-        .select('id')
-        .eq('id', id)
-        .maybeSingle();
-      if (existing) {
-        console.log(`[whop] duplicate event skipped: ${id} (${eventType})`);
-        return NextResponse.json({ ok: true, duplicate: true });
-      }
+  // Record every delivery (verified or not) so failures are visible in
+  // webhook_events instead of being silently dropped.
+  if (id && client) {
+    const { data: existing } = await client
+      .from('webhook_events')
+      .select('verified')
+      .eq('id', id)
+      .maybeSingle();
 
-      const { error: insertError } = await client
-        .from('webhook_events')
-        .insert({ id, event_type: eventType, payload });
-      if (insertError) {
-        if ((insertError as any).code === '23505') {
-          console.log(`[whop] duplicate event skipped (race): ${id} (${eventType})`);
-          return NextResponse.json({ ok: true, duplicate: true });
-        }
-        console.warn('[whop] could not record event; processing anyway:', insertError.message);
-      }
+    if (existing?.verified === true) {
+      console.log(`[whop] duplicate event skipped: ${id} (${eventType})`);
+      return NextResponse.json({ ok: true, duplicate: true });
     }
 
+    const { error: insertError } = await client.from('webhook_events').upsert(
+      {
+        id,
+        event_type: eventType,
+        verified: signatureOk,
+        payload: { ...payload, _signature_verified: signatureOk, _received_at: new Date().toISOString() },
+      },
+      { onConflict: 'id' },
+    );
+    if (insertError) {
+      console.warn('[whop] could not record event; processing anyway:', insertError.message);
+    }
+  }
+
+  if (!signatureOk) {
+    console.warn('[whop] signature verification FAILED', { id, ts, signature: sigHeader.slice(0, 24) });
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+  }
+
+  try {
     switch (eventType) {
       case 'membership.activated':
       case 'membership.payment_success':
       case 'payment.succeeded':
       case 'checkout.completed':
+      case 'invoice.paid':
         await grantAccess(client, object);
         break;
 
       case 'membership.updated':
-        await grantAccess(client, object);
+      case 'membership.cancel_at_period_end_changed':
+        if (object.cancel_at_period_end === true) {
+          await updateStatusOnly(client, object, 'cancelled');
+        } else {
+          await grantAccess(client, object);
+        }
         break;
 
       case 'membership.deactivated':
@@ -291,7 +376,22 @@ export async function POST(request: Request) {
       case 'membership.expired':
       case 'subscription.canceled':
       case 'refund.created':
-        await revokeAccess(client, object, 'canceled');
+      case 'refund.updated':
+        await revokeAccess(client, object, 'cancelled');
+        break;
+
+      case 'payment.failed':
+      case 'invoice.past_due':
+        await updateStatusOnly(client, object, 'past_due');
+        break;
+
+      case 'payment.created':
+      case 'payment.pending':
+      case 'invoice.created':
+      case 'invoice.voided':
+      case 'invoice.marked_uncollectible':
+      case 'membership.trial_ending_soon':
+        console.log(`[whop] acknowledged event: ${eventType}`);
         break;
 
       default:

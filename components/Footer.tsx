@@ -72,8 +72,8 @@ export default function Footer() {
         <p className="font-mono">100 – the number of ways agents can misread your homepage.</p>
       </div>
 
-      <div className="relative mx-auto mt-20 max-w-[1200px] overflow-hidden px-4 sm:px-8">
-        <p className="select-none whitespace-nowrap text-center text-[clamp(2.25rem,11vw,12.5rem)] font-semibold leading-none tracking-[-0.04em] text-[color:var(--ink)]">
+      <div className="relative mt-20 w-full overflow-hidden px-4">
+        <p className="select-none whitespace-nowrap text-center text-[clamp(2.5rem,24vw,48rem)] font-semibold leading-none tracking-[-0.04em] text-[color:var(--ink)]">
           AGEN<span className="text-[var(--accent)]">.</span>
         </p>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-b from-transparent to-[var(--surface-footer)]" />

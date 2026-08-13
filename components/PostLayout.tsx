@@ -56,7 +56,7 @@ function BlockView({ block }: { block: Block }) {
         <ol className="space-y-2.5 text-base leading-7 text-[color:var(--body)]">
           {block.items.map((item, i) => (
             <li key={i} className="flex gap-3">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent)]/12 text-xs font-semibold text-[var(--accent)]">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent)] text-xs font-semibold text-white">
                 {i + 1}
               </span>
               <span>{item}</span>
