@@ -1,5 +1,5 @@
 import CheckoutEmbed from './CheckoutEmbed';
-import type { WhopPlan, BillingInterval } from '../../lib/whop';
+import { whopPlanId, whopEnvironment, type WhopPlan, type BillingInterval } from '../../lib/whop';
 
 export const metadata = { title: 'Subscribe · Agent Audits' };
 
@@ -11,6 +11,8 @@ export default async function CheckoutPage({
   const sp = await searchParams;
   const plan: WhopPlan = sp.plan === 'agency' ? 'agency' : 'pro';
   const interval: BillingInterval = sp.interval === 'monthly' ? 'monthly' : 'annual';
+  const planId = whopPlanId(plan, interval);
+  const environment = whopEnvironment();
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-16 sm:px-8 sm:py-24">
@@ -23,7 +25,7 @@ export default async function CheckoutPage({
         </p>
       </div>
       <div className="mt-12">
-        <CheckoutEmbed plan={plan} interval={interval} />
+        <CheckoutEmbed plan={plan} interval={interval} planId={planId} environment={environment} />
       </div>
     </div>
   );

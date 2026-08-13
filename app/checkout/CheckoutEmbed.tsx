@@ -4,12 +4,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { useUser } from '../../lib/auth';
-import { whopPlanId, whopEnvironment, type WhopPlan, type BillingInterval } from '../../lib/whop';
+import type { WhopPlan, BillingInterval } from '../../lib/whop';
 
-export default function CheckoutEmbed({ plan, interval }: { plan: WhopPlan; interval: BillingInterval }) {
+export default function CheckoutEmbed({
+  plan,
+  interval,
+  planId,
+  environment,
+}: {
+  plan: WhopPlan;
+  interval: BillingInterval;
+  planId: string | null;
+  environment: 'production' | 'sandbox';
+}) {
   const user = useUser();
   const router = useRouter();
-  const planId = whopPlanId(plan, interval);
 
   if (!planId) {
     return (
@@ -43,7 +52,7 @@ export default function CheckoutEmbed({ plan, interval }: { plan: WhopPlan; inte
       <WhopCheckoutEmbed
         planId={planId}
         prefill={{ email: user.email }}
-        environment={whopEnvironment()}
+        environment={environment}
         onComplete={() => {
           router.push('/settings/billing?activated=true');
         }}
