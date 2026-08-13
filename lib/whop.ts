@@ -10,18 +10,20 @@ export function whopPlanId(plan: WhopPlan, interval: BillingInterval): string | 
     interval === 'annual'
       ? `NEXT_PUBLIC_WHOP_${plan.toUpperCase()}_ANNUAL_PLAN_ID`
       : `NEXT_PUBLIC_WHOP_${plan.toUpperCase()}_MONTHLY_PLAN_ID`;
-  return process.env[envKey] ?? null;
+  const value = process.env[envKey];
+  return value ? value.trim() : null;
 }
 
 export function whopPlanKeyFromId(planId: string | null | undefined): PlanKey | null {
   if (!planId) return null;
+  const normalized = planId.trim();
   const lookup: Record<string, PlanKey> = {
-    [process.env.NEXT_PUBLIC_WHOP_PRO_MONTHLY_PLAN_ID ?? '']: 'pro',
-    [process.env.NEXT_PUBLIC_WHOP_PRO_ANNUAL_PLAN_ID ?? '']: 'pro',
-    [process.env.NEXT_PUBLIC_WHOP_AGENCY_MONTHLY_PLAN_ID ?? '']: 'agency',
-    [process.env.NEXT_PUBLIC_WHOP_AGENCY_ANNUAL_PLAN_ID ?? '']: 'agency',
+    [process.env.NEXT_PUBLIC_WHOP_PRO_MONTHLY_PLAN_ID?.trim() ?? '']: 'pro',
+    [process.env.NEXT_PUBLIC_WHOP_PRO_ANNUAL_PLAN_ID?.trim() ?? '']: 'pro',
+    [process.env.NEXT_PUBLIC_WHOP_AGENCY_MONTHLY_PLAN_ID?.trim() ?? '']: 'agency',
+    [process.env.NEXT_PUBLIC_WHOP_AGENCY_ANNUAL_PLAN_ID?.trim() ?? '']: 'agency',
   };
-  return lookup[planId] ?? null;
+  return lookup[normalized] ?? null;
 }
 
 export function planQuotaFor(plan: PlanKey): number {
