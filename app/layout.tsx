@@ -13,12 +13,14 @@ const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-inter',
+  preload: false,
 });
 
 const mono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-mono',
+  preload: false,
 });
 
 export const metadata: Metadata = {
