@@ -30,6 +30,9 @@ export async function POST(request: Request) {
   const serviceClient = createClient(url, serviceKey, { auth: { persistSession: false } });
 
   const now = new Date().toISOString();
+  const email = user.email ?? '';
+  const name = (user.user_metadata?.name as string) ?? '';
+
   const { data: existing } = await serviceClient
     .from('users')
     .select('id')
@@ -39,11 +42,7 @@ export async function POST(request: Request) {
   if (existing) {
     const { error: updateError } = await serviceClient
       .from('users')
-      .update({
-        email: user.email ?? '',
-        name: (user.user_metadata?.name as string) ?? '',
-        updated_at: now,
-      })
+      .update({ email, name, updated_at: now })
       .eq('id', user.id);
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
@@ -51,12 +50,44 @@ export async function POST(request: Request) {
   } else {
     const { error: insertError } = await serviceClient.from('users').insert({
       id: user.id,
-      email: user.email ?? '',
-      name: (user.user_metadata?.name as string) ?? '',
+      email,
+      name,
       created_at: now,
       updated_at: now,
     });
-    if (insertError) {
+
+    if (insertError && insertError.code === '23505') {
+      // The email already exists on a row keyed to a different id (legacy
+      // rows created before ids were synced to the auth identity). Adopt
+      // that row by re-keying it, repointing child rows first so the FK
+      // from audits/api_keys stays valid.
+      const { data: byEmail } = await serviceClient
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (byEmail && byEmail.id !== user.id) {
+        await serviceClient.from('audits').update({ user_id: user.id }).eq('user_id', byEmail.id);
+        await serviceClient.from('api_keys').update({ user_id: user.id }).eq('user_id', byEmail.id);
+        const { error: rekeyError } = await serviceClient
+          .from('users')
+          .update({ id: user.id, email, name, updated_at: now })
+          .eq('id', byEmail.id);
+        if (rekeyError) {
+          return NextResponse.json({ error: rekeyError.message }, { status: 500 });
+        }
+      } else {
+        // Race with another sync for the same identity — row now exists by id.
+        const { error: updateError } = await serviceClient
+          .from('users')
+          .update({ email, name, updated_at: now })
+          .eq('id', user.id);
+        if (updateError) {
+          return NextResponse.json({ error: updateError.message }, { status: 500 });
+        }
+      }
+    } else if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
   }
