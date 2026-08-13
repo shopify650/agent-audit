@@ -15,26 +15,44 @@ function currentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function candidateSecretKeys(secret: string): Buffer[] {
+  const keys: Buffer[] = [];
+  const stripped = secret.replace(/^wh?_?/i, '');
+
+  const add = (buf: Buffer | undefined) => {
+    if (buf && buf.length > 0) keys.push(buf);
+  };
+
+  add(Buffer.from(secret, 'utf8'));
+  if (stripped !== secret) add(Buffer.from(stripped, 'utf8'));
+  for (const encoded of [secret, stripped]) {
+    add(Buffer.from(encoded, 'base64'));
+    try {
+      add(Buffer.from(encoded, 'base64url'));
+    } catch {
+      // base64url variant may throw on some Node versions; ignore
+    }
+  }
+  return keys;
+}
+
 function verifySignature(rawBody: string, id: string, ts: string, sigHeader: string, secret: string): boolean {
   if (!id || !ts || !sigHeader) return false;
 
-  let secretBytes: Buffer;
-  try {
-    secretBytes = Buffer.from(secret, 'base64');
-    if (secretBytes.length === 0) throw new Error('empty');
-  } catch {
-    secretBytes = Buffer.from(secret, 'utf8');
-  }
-
   const message = `${id}.${ts}.${rawBody}`;
-  const expected = crypto.createHmac('sha256', secretBytes).update(message).digest('base64');
+  const provided = sigHeader
+    .split(',')
+    .map((part) => part.trim().replace(/^v\d+=?/, ''))
+    .filter((candidate) => candidate.length > 0)
+    .map((candidate) => Buffer.from(candidate));
 
-  const candidates = sigHeader.split(',').map((part) => part.trim().replace(/^v\d+=?/, ''));
-  for (const candidate of candidates) {
-    if (!candidate) continue;
-    const provided = Buffer.from(candidate);
-    if (provided.length === expected.length && crypto.timingSafeEqual(provided, Buffer.from(expected))) {
-      return true;
+  for (const secretBytes of candidateSecretKeys(secret)) {
+    const expected = crypto.createHmac('sha256', secretBytes).update(message).digest('base64');
+    const expectedBuf = Buffer.from(expected);
+    for (const p of provided) {
+      if (p.length === expectedBuf.length && crypto.timingSafeEqual(p, expectedBuf)) {
+        return true;
+      }
     }
   }
   return false;
