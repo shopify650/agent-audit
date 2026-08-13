@@ -69,7 +69,8 @@ export function getPaidAiProvider(): AiProvider | null {
 export function getFreeAiProvider(): AiProvider | null {
   const cfg = readAiConfig();
   const provider = process.env.FREE_AI_PROVIDER || cfg.freeProvider || 'gemini';
-  const apiKey = process.env.FREE_AI_KEY || cfg.freeApiKey || '';
+  const providerKey = process.env[`FREE_AI_${provider.toUpperCase()}_KEY`] || '';
+  const apiKey = providerKey || process.env.FREE_AI_KEY || cfg.freeApiKey || '';
   if (!apiKey) return null;
   const defaults = FREE_PROVIDER_DEFAULTS[provider] ?? FREE_PROVIDER_DEFAULTS.gemini;
   return {

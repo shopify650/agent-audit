@@ -191,9 +191,7 @@ export async function getQuota(): Promise<Quota | null> {
   } = await supabase.auth.getUser();
   if (!cachedUser) return null;
 
-  const user = (await getFreshUser()) ?? cachedUser;
-
-  const profile = await getBillingProfile(supabase, user.id);
+  const profile = await getBillingProfile(supabase, cachedUser.id);
   if (profile) {
     const p = planKeyOf(profile.plan_type);
     const limit = profile.monthly_audit_quota;
@@ -201,6 +199,10 @@ export async function getQuota(): Promise<Quota | null> {
     const remaining = Number.isFinite(limit) ? Math.max(0, limit - used) : Number.POSITIVE_INFINITY;
     return { plan: p, limit, used, remaining };
   }
+
+  // No billing profile yet — fall back to user metadata. Only now do we pay
+  // for a fresh user fetch; the common case above returns immediately.
+  const user = (await getFreshUser()) ?? cachedUser;
 
   const plan = planKeyOf(user.user_metadata?.plan);
   const limit = planLimit(plan);

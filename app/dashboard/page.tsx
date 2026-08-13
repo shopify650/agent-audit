@@ -21,12 +21,18 @@ export default function DashboardPage() {
   const [scanLimit, setScanLimit] = useState(10);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      setAudits(await loadAudits());
-      setScans(await loadScans(scanLimit));
-      setQuota(await getQuota());
+      const [a, s, q] = await Promise.all([loadAudits(), loadScans(scanLimit), getQuota()]);
+      if (cancelled) return;
+      setAudits(a);
+      setScans(s);
+      setQuota(q);
     };
     load();
+    return () => {
+      cancelled = true;
+    };
   }, [scanLimit]);
 
   const refresh = async () => {
