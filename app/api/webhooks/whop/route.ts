@@ -95,10 +95,24 @@ function extractEmail(object: unknown): string | null {
   return null;
 }
 
+function findMetadataUserId(object: AnyRecord): string | null {
+  const metadata = object.metadata;
+  if (metadata && typeof metadata === 'object') {
+    const fromMeta = findString(metadata, ['userId', 'user_id', 'referenceId']);
+    if (fromMeta) return fromMeta;
+  }
+  return findString(object, ['userId', 'user_id', 'referenceId']);
+}
+
 async function resolveUserId(
   client: ReturnType<typeof serviceClient>,
   object: AnyRecord,
 ): Promise<string | null> {
+  // 1. Authoritative link set on the checkout session metadata at purchase time.
+  const metadataUserId = findMetadataUserId(object);
+  if (metadataUserId) return metadataUserId;
+
+  // 2. Email match
   const email = extractEmail(object);
   if (email && client) {
     const { data } = await (client.schema('auth').from('users') as any)
@@ -108,6 +122,7 @@ async function resolveUserId(
     if (data?.id) return data.id as string;
   }
 
+  // 3. whop_member_id match
   const memberId = findString(object, ['id', 'membership_id', 'membershipId']);
   if (memberId && client) {
     const { data } = await client
@@ -118,13 +133,6 @@ async function resolveUserId(
     if (data?.id) return data.id;
   }
 
-  const userId = findString(object, ['userId', 'user_id', 'referenceId']);
-  if (userId) return userId;
-  const metadata = object.metadata;
-  if (metadata && typeof metadata === 'object') {
-    const fromMeta = findString(metadata, ['userId', 'user_id', 'referenceId']);
-    if (fromMeta) return fromMeta;
-  }
   return null;
 }
 
@@ -243,6 +251,29 @@ export async function POST(request: Request) {
   const client = serviceClient();
 
   try {
+    if (id && client) {
+      const { data: existing } = await client
+        .from('webhook_events')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+      if (existing) {
+        console.log(`[whop] duplicate event skipped: ${id} (${eventType})`);
+        return NextResponse.json({ ok: true, duplicate: true });
+      }
+
+      const { error: insertError } = await client
+        .from('webhook_events')
+        .insert({ id, event_type: eventType, payload });
+      if (insertError) {
+        if ((insertError as any).code === '23505') {
+          console.log(`[whop] duplicate event skipped (race): ${id} (${eventType})`);
+          return NextResponse.json({ ok: true, duplicate: true });
+        }
+        console.warn('[whop] could not record event; processing anyway:', insertError.message);
+      }
+    }
+
     switch (eventType) {
       case 'membership.activated':
       case 'membership.payment_success':

@@ -10,15 +10,30 @@ export default function CheckoutEmbed({
   plan,
   interval,
   planId,
+  sessionId,
   environment,
 }: {
   plan: WhopPlan;
   interval: BillingInterval;
   planId: string | null;
+  sessionId?: string | null;
   environment: 'production' | 'sandbox';
 }) {
   const user = useUser();
   const router = useRouter();
+
+  if (sessionId) {
+    return (
+      <div className="mx-auto w-full max-w-[560px]">
+        <WhopCheckoutEmbed
+          sessionId={sessionId}
+          onComplete={() => {
+            router.push('/settings/billing?activated=true');
+          }}
+        />
+      </div>
+    );
+  }
 
   if (!planId) {
     return (

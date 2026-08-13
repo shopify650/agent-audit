@@ -11,6 +11,7 @@ export default async function CheckoutPage({
   const sp = await searchParams;
   const plan: WhopPlan = sp.plan === 'agency' ? 'agency' : 'pro';
   const interval: BillingInterval = sp.interval === 'monthly' ? 'monthly' : 'annual';
+  const sessionId = typeof sp.session === 'string' && sp.session ? sp.session : null;
   const planId = whopPlanId(plan, interval);
   const environment = whopEnvironment();
 
@@ -25,7 +26,13 @@ export default async function CheckoutPage({
         </p>
       </div>
       <div className="mt-12">
-        <CheckoutEmbed plan={plan} interval={interval} planId={planId} environment={environment} />
+        <CheckoutEmbed
+          plan={plan}
+          interval={interval}
+          planId={planId}
+          sessionId={sessionId}
+          environment={environment}
+        />
       </div>
     </div>
   );

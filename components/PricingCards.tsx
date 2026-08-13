@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Check } from 'lucide-react';
-import { useUser } from '../lib/auth';
+import { supabase } from '../lib/supabase';
 import { checkoutHref } from '../lib/whop';
 import { PLANS, priceLabel, annualSavings, planPrice, type PlanPricing, type PricingInterval } from '../lib/pricing';
 
@@ -13,15 +14,52 @@ export { PLANS as plans };
 
 export default function PricingCards() {
   const [annual, setAnnual] = useState(true);
-  const user = useUser();
+  const [busyPlan, setBusyPlan] = useState<string | null>(null);
+  const router = useRouter();
   const interval: PricingInterval = annual ? 'annual' : 'monthly';
   const savings = annualSavings(PLANS.find((p) => p.id === 'pro') ?? PLANS[1]);
 
-  const hrefFor = (plan: PlanPricing): string => {
+  const targetFor = (plan: PlanPricing): string => {
     if (!plan.checkout) return plan.href;
-    const target = checkoutHref(plan.checkout, interval);
-    if (!user) return `/auth/signup?next=${encodeURIComponent(target)}`;
-    return target;
+    return checkoutHref(plan.checkout, interval);
+  };
+
+  const handleCheckout = async (plan: PlanPricing) => {
+    if (!plan.checkout) {
+      router.push(plan.href);
+      return;
+    }
+    const target = targetFor(plan);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      router.push(`/auth/signup?next=${encodeURIComponent(target)}`);
+      return;
+    }
+    setBusyPlan(plan.id);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ plan: plan.checkout, interval }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && typeof data?.sessionId === 'string' && data.sessionId) {
+        router.push(
+          `/checkout?session=${encodeURIComponent(data.sessionId)}&plan=${plan.checkout}&interval=${interval}`,
+        );
+      } else {
+        router.push(target);
+      }
+    } catch {
+      router.push(target);
+    } finally {
+      setBusyPlan(null);
+    }
   };
 
   return (
@@ -102,15 +140,23 @@ export default function PricingCards() {
                 <button disabled className="btn btn-secondary btn-sm mt-8 w-full cursor-not-allowed opacity-60">
                   {plan.cta}
                 </button>
-              ) : plan.featured ? (
-                <Link href={hrefFor(plan)} className="btn btn-accent btn-sm mt-8 w-full">
-                  <span className="btn-chip">
-                    <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
-                  </span>
-                  {plan.cta}
-                </Link>
+              ) : plan.checkout ? (
+                <button
+                  onClick={() => handleCheckout(plan)}
+                  disabled={busyPlan === plan.id}
+                  className={`btn ${plan.featured ? 'btn-accent' : 'btn-secondary'} btn-sm mt-8 w-full ${
+                    busyPlan === plan.id ? 'cursor-not-allowed opacity-60' : ''
+                  }`}
+                >
+                  {plan.featured && (
+                    <span className="btn-chip">
+                      <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+                    </span>
+                  )}
+                  {busyPlan === plan.id ? 'Starting checkout…' : plan.cta}
+                </button>
               ) : (
-                <Link href={hrefFor(plan)} className="btn btn-secondary btn-sm mt-8 w-full">
+                <Link href={targetFor(plan)} className="btn btn-secondary btn-sm mt-8 w-full">
                   {plan.cta}
                 </Link>
               )}
