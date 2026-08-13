@@ -25,8 +25,12 @@ export default function TermsPage() {
           <p className="mt-2">Reports reflect heuristic checks, not guaranteed rankings. Audit output is provided “as is” without warranty of any kind.</p>
         </section>
         <section>
+          <h2 className="text-lg font-medium text-[color:var(--ink)]">Payments &amp; subscriptions</h2>
+          <p className="mt-2">Paid plans are recurring subscriptions billed monthly or annually by Whop. Subscriptions renew automatically until cancelled. You can cancel from the Whop customer portal or your account settings; you keep access until the end of the current billing period. Refunds are handled under Whop&apos;s refund policy.</p>
+        </section>
+        <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Contact</h2>
-          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">muhamamdhamzainfo904@gmail.com</span>. See our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/privacy">Privacy Policy</Link>.</p>
+          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">muhammadhamzainfo904@gmail.com</span>. See our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/privacy">Privacy Policy</Link>.</p>
         </section>
       </div>
     </div>

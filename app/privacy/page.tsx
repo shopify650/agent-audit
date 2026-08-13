@@ -26,11 +26,11 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Third parties</h2>
-          <p className="mt-2">We use these providers to run the service: Supabase for authentication and data storage; OpenRouter, Google Gemini, Groq, and OpenAI to analyze pages and generate reports; and Creem to process payments when you subscribe to a paid plan. We only share the data needed to deliver the feature you&apos;re using.</p>
+          <p className="mt-2">We use these providers to run the service: Supabase for authentication and data storage; OpenRouter, Google Gemini, Groq, and OpenAI to analyze pages and generate reports; and Whop to process payments when you subscribe to a paid plan. We only share the data needed to deliver the feature you&apos;re using.</p>
         </section>
         <section>
           <h2 className="text-lg font-medium text-[color:var(--ink)]">Contact</h2>
-          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">muhamamdhamzainfo904@gmail.com</span>. Also see our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/terms">Terms of Service</Link>.</p>
+          <p className="mt-2">Questions? Email <span className="font-medium text-[color:var(--ink)]">muhammadhamzainfo904@gmail.com</span>. Also see our <Link className="font-medium text-[color:var(--primary)] hover:text-[color:var(--primary-active)]" href="/terms">Terms of Service</Link>.</p>
         </section>
       </div>
     </div>
