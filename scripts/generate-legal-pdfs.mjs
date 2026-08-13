@@ -3,7 +3,7 @@ import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import puppeteer from 'puppeteer-core';
 
-const SITE_URL = 'https://agenaudits.vercel.app';
+const SITE_URL = 'https://getagen.xyz';
 const CONTACT_EMAIL = 'muhammadhamzainfo904@gmail.com';
 const UPDATED = 'August 13, 2026';
 
